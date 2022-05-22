@@ -1,6 +1,8 @@
 package com.practice.springretry.controller;
 
-import com.practice.springretry.service.SoJuApiService;
+import com.practice.springretry.controller.dto.SoJuCountResponse;
+import com.practice.springretry.service.*;
+import com.practice.springretry.service.info.SoJuCountInfo;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -13,15 +15,19 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class SoJuController {
 
-    private final SoJuApiService soJuApiService;
+    private final SoJuRetryAnnotationService retryAnnotationService;
 
-    @GetMapping("/api/v1/soju/{sojuName}/count")
-    public ResponseEntity<Integer> getSoJuCountV1(@PathVariable String sojuName) {
-        return ResponseEntity.ok(soJuApiService.getSoJuCount(sojuName));
+    @GetMapping("/api/v1/soju/{soJuName}/count")
+    public ResponseEntity<SoJuCountResponse> getSoJuCountV1(@PathVariable String soJuName) {
+        SoJuCountInfo info = retryAnnotationService.getSoJuCount(soJuName);
+        SoJuCountResponse response = SoJuCountResponse.of(info);
+        return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/api/v2/soju/{sojuName}/count")
-    public ResponseEntity<Integer> getSoJuCountV2(@PathVariable String sojuName) {
-        return ResponseEntity.ok(soJuApiService.getSoJuCountFail(sojuName));
+    @GetMapping("/api/v2/soju/{soJuName}/count")
+    public ResponseEntity<SoJuCountResponse> getSoJuCountV2(@PathVariable String soJuName) {
+        SoJuCountInfo info = retryAnnotationService.getSoJuCountFail(soJuName);
+        SoJuCountResponse response = SoJuCountResponse.of(info);
+        return ResponseEntity.ok(response);
     }
 }
